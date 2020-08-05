@@ -37,6 +37,7 @@ func GetCategory(baseURL string) []string {
 func GetProductPage(baseURL string) []m.Data {
 	pages := GetPagesCount(baseURL)
 
+	// 짧은 선언 사용불가
 	var result m.Data
 	var resultList []m.Data
 
@@ -128,6 +129,5 @@ func GetAllImageInProduct(productURL string) []string {
 			imgList = append(imgList, src)
 		}
 	})
-
 	return imgList
 }
