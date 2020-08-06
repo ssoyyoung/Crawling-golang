@@ -17,12 +17,9 @@ func ImgDownloading(imgList []string, productPath string) {
 	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0644)
 	utils.CheckErr(err)
 
-	fmt.Println("starting")
-
 	for _, imgURL := range imgList {
 		imgName := "imgFiles/" + productPath + "/" + utils.SplitData(imgURL, "/", 1)
 		url := "https://benito.co.kr" + imgURL
-		fmt.Println(">>", imgName, url)
 
 		go func(url string) {
 			wg.Add(1)
@@ -54,6 +51,7 @@ func ImgDownloading(imgList []string, productPath string) {
 		}(url)
 	}
 	wg.Wait()
+	fmt.Println("[DONE] downloaded img", productPath, ">>", len(imgList))
 }
 
 var wg sync.WaitGroup

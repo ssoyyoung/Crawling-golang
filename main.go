@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	img "github.com/ssoyyoung.p/Crawling-golang/imgdown"
 	parsing "github.com/ssoyyoung.p/Crawling-golang/parsing"
@@ -11,6 +12,7 @@ import (
 )
 
 func main() {
+
 	debug := false
 	baseURL := "https://benito.co.kr"
 	categoryURL := parsing.GetCategory(baseURL)
@@ -25,19 +27,21 @@ func main() {
 			break
 		}
 
-		resultList := parsing.GetProductPage(crawlLink)
+		start := time.Now()
+		resultList := parsing.GOgetProductPage(crawlLink)
+		fmt.Println(crawlLink, ">>", len(resultList))
+
 		for i, result := range resultList {
 			if debug && i >= 1 {
 				break
 			}
-			fmt.Println(result.URL)
-			fmt.Println(len(result.ImgList))
 			productNum := utils.SplitData(result.URL, "/", 6)
 			productPath := cateN + "/" + productNum
 			utils.CreateDir(productPath)
 			img.ImgDownloading(result.ImgList, productPath)
 		}
-
+		elapsed := time.Since(start)
+		log.Printf("Binomial took %s", elapsed)
 	}
 }
 

@@ -33,25 +33,24 @@ func GetCategory(baseURL string) []string {
 	return categoryURL
 }
 
-// GetProductPage : [2] get product category
-func GetProductPage(baseURL string) []m.Data {
+// GOgetProductPage : [2] get product category
+func GOgetProductPage(baseURL string) []m.Data {
 	pages := GetPagesCount(baseURL)
 
-	// 짧은 선언 사용불가
-	var result m.Data
 	var resultList []m.Data
+	c := make(chan m.Data)
 
 	for i := 1; i < pages+1; i++ {
 		productURL := baseURL + "&page=" + strconv.Itoa(i)
-
 		productItemList := GetProductList(productURL)
 
 		for _, productURL := range productItemList {
-			result.URL = productURL
-			result.ImgList = GetAllImageInProduct(productURL)
+			go GOgetAllImageInProduct(productURL, c)
+		}
+		for i := 0; i < len(productItemList); i++ {
+			result := <-c
 			resultList = append(resultList, result)
 		}
-
 	}
 
 	return resultList
@@ -110,6 +109,58 @@ func GetProductList(productURL string) []string {
 	return productItemList
 }
 
+// GOgetAllImageInProduct : [2-2] get all image in product
+func GOgetAllImageInProduct(productURL string, c chan<- m.Data) {
+	res, err := http.Get(productURL)
+	utils.CheckCode(res)
+	utils.CheckErr(err)
+
+	defer res.Body.Close()
+
+	doc, err := goquery.NewDocumentFromReader(res.Body)
+	utils.CheckErr(err)
+
+	imgList := []string{}
+
+	doc.Find("#prdDetail div img").Each(func(i int, s *goquery.Selection) {
+		src, _ := s.Attr("src")
+		if strings.Contains(src, "intop") == false {
+			imgList = append(imgList, src)
+		}
+	})
+
+	c <- m.Data{
+		URL:     productURL,
+		ImgList: imgList,
+	}
+}
+
+/////////////// Not Use Goroutine ///////////////
+
+// GetProductPage : [2] get product category
+func GetProductPage(baseURL string) []m.Data {
+	pages := GetPagesCount(baseURL)
+
+	// 짧은 선언 사용불가
+	var result m.Data
+	var resultList []m.Data
+
+	for i := 1; i < pages+1; i++ {
+		productURL := baseURL + "&page=" + strconv.Itoa(i)
+
+		productItemList := GetProductList(productURL)
+
+		for _, productURL := range productItemList {
+			result.URL = productURL
+			result.ImgList = GetAllImageInProduct(productURL)
+			resultList = append(resultList, result)
+		}
+
+	}
+
+	return resultList
+}
+
 // GetAllImageInProduct : [2-2] get all image in product
 func GetAllImageInProduct(productURL string) []string {
 	res, err := http.Get(productURL)
@@ -129,5 +180,6 @@ func GetAllImageInProduct(productURL string) []string {
 			imgList = append(imgList, src)
 		}
 	})
+
 	return imgList
 }
