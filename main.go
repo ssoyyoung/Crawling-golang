@@ -11,14 +11,14 @@ import (
 )
 
 func main() {
-	debug := true
+	debug := false
 	baseURL := "https://benito.co.kr"
 	categoryURL := parsing.GetCategory(baseURL)
 
 	for idx, cateURL := range categoryURL {
 		fmt.Println(cateURL)
 		crawlLink := baseURL + cateURL
-		cateN := utils.SplitData(crawlLink, "=")
+		cateN := utils.SplitData(crawlLink, "=", 1)
 		utils.CreateDir(cateN)
 
 		if debug && idx >= 1 {
@@ -32,7 +32,10 @@ func main() {
 			}
 			fmt.Println(result.URL)
 			fmt.Println(len(result.ImgList))
-			img.ImgDownloading(result.ImgList, cateN)
+			productNum := utils.SplitData(result.URL, "/", 6)
+			productPath := cateN + "/" + productNum
+			utils.CreateDir(productPath)
+			img.ImgDownloading(result.ImgList, productPath)
 		}
 
 	}

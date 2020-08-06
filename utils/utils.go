@@ -22,10 +22,10 @@ func CheckCode(res *http.Response) {
 }
 
 // SplitData func
-func SplitData(original, split string) string {
+func SplitData(original, split string, num int) string {
 	splitString := strings.Split(original, split)
 
-	return splitString[len(splitString)-1]
+	return splitString[len(splitString)-num]
 }
 
 // CreateDir func

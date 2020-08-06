@@ -12,15 +12,15 @@ import (
 )
 
 // ImgDownloading func
-func ImgDownloading(imgList []string, cateN string) {
-	fileName := "imgFiles/" + cateN + "/error.txt"
+func ImgDownloading(imgList []string, productPath string) {
+	fileName := "imgFiles/error.txt"
 	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0644)
 	utils.CheckErr(err)
 
 	fmt.Println("starting")
 
 	for _, imgURL := range imgList {
-		imgName := "imgFiles/" + cateN + "/" + utils.SplitData(imgURL, "/")
+		imgName := "imgFiles/" + productPath + "/" + utils.SplitData(imgURL, "/", 1)
 		url := "https://benito.co.kr" + imgURL
 		fmt.Println(">>", imgName, url)
 
@@ -31,7 +31,7 @@ func ImgDownloading(imgList []string, cateN string) {
 
 			if err != nil {
 				fmt.Println("http get error: ", url, "-", err)
-				if _, err := file.WriteString(url + "\n"); err != nil {
+				if _, err := file.WriteString(productPath + ", " + url + "\n"); err != nil {
 					fmt.Println(">>>Writing error!", url)
 				}
 			} else {
