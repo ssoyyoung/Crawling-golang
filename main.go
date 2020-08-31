@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	img "github.com/ssoyyoung.p/Crawling-golang/imgdown"
 	parsing "github.com/ssoyyoung.p/Crawling-golang/parsing"
 )
@@ -21,7 +19,7 @@ func main() {
 
 	for i := 0; i < len(categoryURL); i++ {
 		result := <-c1
-		fmt.Println("[DONE] crawling category", result)
+		//fmt.Println("[DONE] crawling category", result)
 		resultList = append(resultList, result)
 
 	}
